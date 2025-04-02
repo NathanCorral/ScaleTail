@@ -51,7 +51,9 @@ services:
       # - ${PWD}/jellyfin/config:/config
       # - ${PWD}/media/tvseries:/data/tvshows
       # - ${PWD}/media/movies:/data/movies
-      - /mnt/jellyfin_flash500_0:/data/flash500
+      - /mnt/jellyfin_flash500_0:/mnt/flash500
+      - ${HOME}/docker-shared/jellyfin:/data
+      # - ${HOME}/data/share_external
     depends_on:
       tailscale:
         condition: service_healthy
