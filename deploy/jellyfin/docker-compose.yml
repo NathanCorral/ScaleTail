@@ -51,7 +51,7 @@ services:
       # - ${PWD}/jellyfin/config:/config
       # - ${PWD}/media/tvseries:/data/tvshows
       # - ${PWD}/media/movies:/data/movies
-      - /mnt/jellyfin_flash500_0:/data/flash500:ro
+      - /mnt/jellyfin_flash500_0:/data/flash500
     depends_on:
       tailscale:
         condition: service_healthy
