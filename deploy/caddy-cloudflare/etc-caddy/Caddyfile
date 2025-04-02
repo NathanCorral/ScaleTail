@@ -1,0 +1,26 @@
+(cloudflare) {
+	tls {
+		dns cloudflare VYbrYjQXUABu9aPL27ATM0DRk7BRtyLdrPGbrivT
+	}
+}
+
+piehole.app.nathancorral.com {
+	reverse_proxy * http://100.89.171.65
+	import cloudflare
+}
+
+pdf.app.nathancorral.com {
+	reverse_proxy * http://100.98.65.42:8080
+	import cloudflare
+}
+
+jellyfin.app.nathancorral.com {
+	reverse_proxy * http://100.108.10.10:8096
+	import cloudflare
+}
+
+#100.127.172.127 {
+#	reverse_proxy /pdf/* http://100.115.98.54:8080
+#	root * /usr/share/caddy
+#	file_server
+#}
