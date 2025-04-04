@@ -19,6 +19,11 @@ jellyfin.app.nathancorral.com {
 	import cloudflare
 }
 
+immich.app.nathancorral.com {
+	reverse_proxy * http://100.79.216.122:2283
+	import cloudflare
+}
+
 #100.127.172.127 {
 #	reverse_proxy /pdf/* http://100.115.98.54:8080
 #	root * /usr/share/caddy
