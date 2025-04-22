@@ -1,0 +1,62 @@
+services:
+
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    init: true
+    restart: unless-stopped
+    container_name: nextcloud-aio-mastercontainer # This line cannot be changed.
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nextcloud-aio
+    ports:
+      - 0.0.0.0:8080:8080
+    environment:
+      APACHE_PORT: 11000
+      APACHE_IP_BINDING: 127.0.0.1
+      SKIP_DOMAIN_VALIDATION: true
+
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale-${SERVICE} # Name for local container management
+    environment:
+      #TS_HOSTNAME: ${TS_HOSTNAME} # Enter the hostname for your tailnet
+      TS_AUTHKEY: ${TS_OAUTHKEY}?ephemeral=false # OAuth client key recommended
+      TS_EXTRA_ARGS: ${TS_EXTRA_ARGS} # Tags are required when using OAuth client
+      #TS_SERVE_CONFIG: /serve.json
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_USERSPACE: false
+      TS_ENABLE_HEALTH_CHECK: true
+      TS_LOCAL_ADDR_PORT: 127.0.0.1:41234
+    init: true
+    restart: always
+    volumes:
+      - ${HOME}/data/${SERVICE}/ts_config:/config # Config folder used to store Tailscale files - you may need to change the path
+      - ${HOME}/data/${SERVICE}/ts_state:/var/lib/tailscale # Tailscale requirement - you may need to change the path
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin # Tailscale requirement
+      - sys_module # Tailscale requirement
+    networks:
+      - nextcloud-aio
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:41234/healthz"] # Check Tailscale has a Tailnet IP and is operational
+      interval: 1m # How often to perform the check
+      timeout: 10s # Time to wait for the check to succeed
+      retries: 3 # Number of retries before marking as unhealthy
+      start_period: 10s # Time to wait before starting health checks
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # This line cannot be changed.
+
+networks:
+  nextcloud-aio:
+    name: nextcloud-aio
+    driver: bridge
+    enable_ipv6: false
+    driver_opts:
+      com.docker.network.driver.mtu: "9001" # Jumbo Frame
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1" # Harden aio
