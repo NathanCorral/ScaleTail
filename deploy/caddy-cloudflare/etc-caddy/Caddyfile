@@ -29,6 +29,12 @@ flatnote.app.nathancorral.com flatnotes.app.nathancorral.com {
 	import cloudflare
 }
 
+karakeep.app.nathancorral.com {
+	reverse_proxy * http://100.120.218.28:3000
+	import cloudflare
+}
+
+
 #nextcloud.app.nathancorral.com {
 #	reverse_proxy * http://100.82.213.64:11000
 #	import cloudflare
