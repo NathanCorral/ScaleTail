@@ -24,6 +24,16 @@ immich.app.nathancorral.com {
 	import cloudflare
 }
 
+flatnote.app.nathancorral.com flatnotes.app.nathancorral.com {
+	reverse_proxy * http://100.95.178.24:8080
+	import cloudflare
+}
+
+#nextcloud.app.nathancorral.com {
+#	reverse_proxy * http://100.82.213.64:11000
+#	import cloudflare
+#}
+
 #100.127.172.127 {
 #	reverse_proxy /pdf/* http://100.115.98.54:8080
 #	root * /usr/share/caddy
