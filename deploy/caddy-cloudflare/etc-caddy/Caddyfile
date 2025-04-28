@@ -34,7 +34,6 @@ karakeep.app.nathancorral.com {
 	import cloudflare
 }
 
-
 #nextcloud.app.nathancorral.com {
 #	reverse_proxy * http://100.82.213.64:11000
 #	import cloudflare
