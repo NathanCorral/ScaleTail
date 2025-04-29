@@ -24,13 +24,38 @@ immich.app.nathancorral.com {
 	import cloudflare
 }
 
-flatnote.app.nathancorral.com flatnotes.app.nathancorral.com {
+flatnote.app.nathancorral.com {
+	reverse_proxy * http://100.95.178.24:8080
+	import cloudflare
+}
+
+flatnotes.app.nathancorral.com {
 	reverse_proxy * http://100.95.178.24:8080
 	import cloudflare
 }
 
 karakeep.app.nathancorral.com {
 	reverse_proxy * http://100.120.218.28:3000
+	import cloudflare
+}
+
+pingvin.app.nathancorral.com {
+	reverse_proxy * http://100.88.177.65:3000
+	import cloudflare
+}
+
+share.app.nathancorral.com {
+	reverse_proxy * http://100.88.177.65:3000
+	import cloudflare
+}
+
+vaultwarden.app.nathancorral.com {
+	reverse_proxy * http://100.71.98.19:80
+	import cloudflare
+}
+
+bitwarden.app.nathancorral.com {
+	reverse_proxy * http://100.71.98.19:80
 	import cloudflare
 }
 
