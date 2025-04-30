@@ -1,0 +1,103 @@
+# Docker Compose file for running paperless from the Docker Hub.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# SQLite is used as the database. The SQLite file is stored in the data volume.
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker compose pull'.
+# - Run 'docker compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+
+services:
+  tailscale:
+    image: tailscale/tailscale:latest # Image to be used
+    container_name: tailscale-${SERVICE} # Name for local container management
+    hostname: ${SERVICE} # Name used within your Tailscale environment
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}?ephemeral=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --reset
+      - TS_STATE_DIR=/var/lib/tailscale
+        #- TS_SERVE_CONFIG=/config/serve.json # Tailsacale Serve configuration to expose the web interface on your local Tailnet - remove this line if not required
+      - TS_USERSPACE=false
+      - TS_ENABLE_HEALTH_CHECK=true              # Enable healthcheck endpoint: "/healthz"
+      - TS_LOCAL_ADDR_PORT=127.0.0.1:41234       # The <addr>:<port> for the healthz endpoint
+    volumes:
+      - ${HOME}/docker-tailscale/${SERVICE}/ts_config:/config # Config folder used to store Tailscale files - you may need to change the path
+      - ${HOME}/docker-tailscale/${SERVICE}/ts_state:/var/lib/tailscale # Tailscale requirement - you may need to change the path
+    devices:
+      - /dev/net/tun:/dev/net/tun # Network configuration for Tailscale to work
+    cap_add:
+      - net_admin # Tailscale requirement
+      - sys_module # Tailscale requirement
+    #ports:
+    #  - 0.0.0.0:${SERVICEPORT}:${SERVICEPORT} # Binding port ${SERVICE}PORT to the local network - may be removed if only exposure to your Tailnet is required
+    # If any DNS issues arise, use your preferred DNS provider by uncommenting the config below
+    dns: 
+      - ${DNS_SERVER}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:41234/healthz"] # Check Tailscale has a Tailnet IP and is operational
+      interval: 1m # How often to perform the check
+      timeout: 10s # Time to wait for the check to succeed
+      retries: 3 # Number of retries before marking as unhealthy
+      start_period: 10s # Time to wait before starting health checks
+    restart: always
+
+  redis:
+    image: docker.io/library/redis:7
+    container_name: redis_${SERVICE} # MUST MATCH PAPERLESS_REDIS NAME!!!!
+    volumes:
+      - ${HOME}/data/${SERVICE}/redisdata:/data
+    healthcheck:
+      test: redis-cli ping || exit 1
+    restart: always
+
+  mariadb:
+    image: docker.io/library/mariadb:11
+    container_name: mariadb_${SERVICE}
+    volumes:
+      - ${HOME}/data/${SERVICE}/dbdata:/var/lib/postgresql/data
+    environment:
+      MARIADB_HOST: ${MARIADB_HOST}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    restart: always
+      
+  application:
+    image: ${PAPERLESS_URL}:${PAPERLESS_VERSION:-latest}
+    container_name: app-${SERVICE}
+    restart: always
+    depends_on:
+      - redis
+      - mariadb
+      - tailscale
+    network_mode: service:tailscale # Sidecar configuration to route ${SERVICE} through Tailscale
+    volumes:
+      - ${HOME}/data/${SERVICE}/data:/usr/src/paperless/data
+      - ${HOME}/data/${SERVICE}/media:/usr/src/paperless/media
+      - ${HOME}/data/${SERVICE}/export:/usr/src/paperless/export
+      - ${HOME}/data/${SERVICE}/consume:/usr/src/paperless/consume
+    env_file: docker-compose.env
+    environment:
+      PAPERLESS_REDIS: redis://redis_${SERVICE}:6379 # MUST MATCH CONTAINER NAME!!!!
+
+volumes:
+  data:
+  media:
+  dbdata:
+  redisdata:

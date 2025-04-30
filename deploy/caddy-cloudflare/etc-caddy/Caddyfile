@@ -59,6 +59,30 @@ bitwarden.app.nathancorral.com {
 	import cloudflare
 }
 
+paperless.app.nathancorral.com {
+	reverse_proxy * http://100.86.137.22:8000
+	import cloudflare
+}
+
+searxing.app.nathancorral.com {
+	reverse_proxy * http://100.67.76.66:8080
+	import cloudflare
+}
+
+search.app.nathancorral.com {
+	reverse_proxy * http://100.67.76.66:8080
+	import cloudflare
+}
+
+budget.app.nathancorral.com {
+	reverse_proxy * http://100.116.235.123:5006
+	import cloudflare
+}
+actual-budget.app.nathancorral.com {
+	reverse_proxy * http://100.116.235.123:5006
+	import cloudflare
+}
+
 #nextcloud.app.nathancorral.com {
 #	reverse_proxy * http://100.82.213.64:11000
 #	import cloudflare
