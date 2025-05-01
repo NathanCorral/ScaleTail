@@ -83,6 +83,21 @@ actual-budget.app.nathancorral.com {
 	import cloudflare
 }
 
+convert.app.nathancorral.com {
+	reverse_proxy * http://100.84.254.13:3000
+	import cloudflare
+}
+convertx.app.nathancorral.com {
+	reverse_proxy * http://100.84.254.13:3000
+	import cloudflare
+}
+
+mealie.app.nathancorral.com {
+	reverse_proxy * http://100.121.43.125:9000
+	import cloudflare
+}
+
+
 #nextcloud.app.nathancorral.com {
 #	reverse_proxy * http://100.82.213.64:11000
 #	import cloudflare
