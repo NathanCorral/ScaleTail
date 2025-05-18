@@ -4,76 +4,83 @@
 	}
 }
 
+# Pihole
 pihole.app.nathancorral.com {
 	reverse_proxy * http://100.89.171.65
 	import cloudflare
 }
 
+# Jellyfin
 pdf.app.nathancorral.com {
-	reverse_proxy * http://100.98.65.42:8080
+	reverse_proxy * http://100.67.56.96:8080
 	import cloudflare
 }
 
+# Jellyfin
 jellyfin.app.nathancorral.com {
 	reverse_proxy * http://100.108.10.10:8096
 	import cloudflare
 }
 
+# Immich
 immich.app.nathancorral.com {
-	reverse_proxy * http://100.79.216.122:2283
+	reverse_proxy * http://100.119.94.1:2283
 	import cloudflare
 }
 
+# Flatnote
 flatnote.app.nathancorral.com {
 	reverse_proxy * http://100.95.178.24:8080
 	import cloudflare
 }
-
 flatnotes.app.nathancorral.com {
 	reverse_proxy * http://100.95.178.24:8080
 	import cloudflare
 }
 
+# Karakeep
 karakeep.app.nathancorral.com {
 	reverse_proxy * http://100.120.218.28:3000
 	import cloudflare
 }
 
+# Pingvin
 pingvin.app.nathancorral.com {
 	reverse_proxy * http://100.88.177.65:3000
 	import cloudflare
 }
-
 share.app.nathancorral.com {
 	reverse_proxy * http://100.88.177.65:3000
 	import cloudflare
 }
 
+# Vaultwarden
 vaultwarden.app.nathancorral.com {
-	reverse_proxy * http://100.71.98.19:80
+	reverse_proxy * http://100.90.17.87
 	import cloudflare
 }
-
 bitwarden.app.nathancorral.com {
 	reverse_proxy * http://100.71.98.19:80
 	import cloudflare
 }
 
+# Paperless
 paperless.app.nathancorral.com {
 	reverse_proxy * http://100.86.137.22:8000
 	import cloudflare
 }
 
+# Searxing -- todo
 searxing.app.nathancorral.com {
 	reverse_proxy * http://100.67.76.66:8080
 	import cloudflare
 }
-
 search.app.nathancorral.com {
 	reverse_proxy * http://100.67.76.66:8080
 	import cloudflare
 }
 
+# Actual Budget
 budget.app.nathancorral.com {
 	reverse_proxy * http://100.116.235.123:5006
 	import cloudflare
@@ -83,6 +90,7 @@ actual-budget.app.nathancorral.com {
 	import cloudflare
 }
 
+# ConvertX
 convert.app.nathancorral.com {
 	reverse_proxy * http://100.84.254.13:3000
 	import cloudflare
@@ -92,12 +100,13 @@ convertx.app.nathancorral.com {
 	import cloudflare
 }
 
+# Mealie
 mealie.app.nathancorral.com {
-	reverse_proxy * http://100.121.43.125:9000
+	reverse_proxy * http://100.111.20.125:9000
 	import cloudflare
 }
 
-
+# Nextcloud todo
 #nextcloud.app.nathancorral.com {
 #	reverse_proxy * http://100.82.213.64:11000
 #	import cloudflare
