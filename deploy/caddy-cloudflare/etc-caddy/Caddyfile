@@ -10,7 +10,7 @@ pihole.app.nathancorral.com {
 	import cloudflare
 }
 
-# Jellyfin
+# Stirling PDF
 pdf.app.nathancorral.com {
 	reverse_proxy * http://100.67.56.96:8080
 	import cloudflare
@@ -30,27 +30,27 @@ immich.app.nathancorral.com {
 
 # Flatnote
 flatnote.app.nathancorral.com {
-	reverse_proxy * http://100.95.178.24:8080
+	reverse_proxy * http://100.127.239.42:8080
 	import cloudflare
 }
 flatnotes.app.nathancorral.com {
-	reverse_proxy * http://100.95.178.24:8080
+	reverse_proxy * http://100.127.239.42:8080
 	import cloudflare
 }
 
 # Karakeep
 karakeep.app.nathancorral.com {
-	reverse_proxy * http://100.120.218.28:3000
+	reverse_proxy * http://100.66.31.60:3000
 	import cloudflare
 }
 
 # Pingvin
 pingvin.app.nathancorral.com {
-	reverse_proxy * http://100.88.177.65:3000
+	reverse_proxy * http://100.110.44.23:3000
 	import cloudflare
 }
 share.app.nathancorral.com {
-	reverse_proxy * http://100.88.177.65:3000
+	reverse_proxy * http://100.110.44.23:3000
 	import cloudflare
 }
 
@@ -60,13 +60,13 @@ vaultwarden.app.nathancorral.com {
 	import cloudflare
 }
 bitwarden.app.nathancorral.com {
-	reverse_proxy * http://100.71.98.19:80
+	reverse_proxy * http://100.90.17.87:80
 	import cloudflare
 }
 
 # Paperless
 paperless.app.nathancorral.com {
-	reverse_proxy * http://100.86.137.22:8000
+	reverse_proxy * http://100.103.100.81:8000
 	import cloudflare
 }
 
@@ -82,21 +82,21 @@ search.app.nathancorral.com {
 
 # Actual Budget
 budget.app.nathancorral.com {
-	reverse_proxy * http://100.116.235.123:5006
+	reverse_proxy * http://100.65.195.13:5006
 	import cloudflare
 }
 actual-budget.app.nathancorral.com {
-	reverse_proxy * http://100.116.235.123:5006
+	reverse_proxy * http://100.65.195.13:5006
 	import cloudflare
 }
 
 # ConvertX
 convert.app.nathancorral.com {
-	reverse_proxy * http://100.84.254.13:3000
+	reverse_proxy * http://100.76.183.17:3000
 	import cloudflare
 }
 convertx.app.nathancorral.com {
-	reverse_proxy * http://100.84.254.13:3000
+	reverse_proxy * http://100.76.183.17:3000
 	import cloudflare
 }
 

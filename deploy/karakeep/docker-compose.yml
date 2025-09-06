@@ -7,17 +7,16 @@ services:
     container_name: tailscale-${SERVICE} # Name for local container management
     hostname: ${SERVICE} # Name used within your Tailscale environment
     environment:
-      - TS_AUTHKEY=${TS_AUTHKEY}?ephemeral=false
-      - TS_EXTRA_ARGS=--reset --advertise-tags=tag:container 
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_EXTRA_ARGS=--reset --login-server=${CONTROL_SERVER_URL}
       - TS_STATE_DIR=/var/lib/tailscale
-      # - TS_SERVE_CONFIG=/config/serve.json # Tailsacale Serve configuration to expose the web interface on your local Tailnet - remove this line if not required
+      #- TS_SERVE_CONFIG=/config/serve.json # Tailsacale Serve configuration to expose the web interface on your local Tailnet - remove this line if not required
       - TS_USERSPACE=false
       - TS_ENABLE_HEALTH_CHECK=true              # Enable healthcheck endpoint: "/healthz"
       - TS_LOCAL_ADDR_PORT=127.0.0.1:41234       # The <addr>:<port> for the healthz endpoint
-      #- TS_EXTRA_ARGS=--accept-dns=true # Uncomment when using MagicDNS
     volumes:
-      - ${HOME}/docker-tailscale/${SERVICE}/ts_config:/config # Config folder used to store Tailscale files - you may need to change the path
-      - ${HOME}/docker-tailscale/${SERVICE}/ts_state:/var/lib/tailscale # Tailscale requirement - you may need to change the path
+      - ${HOME}/docker/headscale/${SERVICE}/ts_config:/config # Config folder used to store Tailscale files - you may need to change the path
+      - ${HOME}/docker/headscale/${SERVICE}/ts_state:/var/lib/tailscale # Tailscale requirement - you may need to change the path
     devices:
       - /dev/net/tun:/dev/net/tun # Network configuration for Tailscale to work
     cap_add:
@@ -27,7 +26,7 @@ services:
     #  - 0.0.0.0:${SERVICEPORT}:${SERVICEPORT} # Binding port ${SERVICE}PORT to the local network - may be removed if only exposure to your Tailnet is required
     # If any DNS issues arise, use your preferred DNS provider by uncommenting the config below
     dns: 
-     - ${DNS_SERVER}
+      - ${DNS_SERVER}
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:41234/healthz"] # Check Tailscale has a Tailnet IP and is operational
       interval: 1m # How often to perform the check
@@ -57,7 +56,7 @@ services:
       # If you want to mount a custom directory, change the volume mapping to:
       # - /path/to/your/directory:/data
       # - ${PWD}/${SERVICE}-data/data:/data
-      - ${HOME}/data/${SERVICE}/data:/data
+      - ${HOME}/_app_data/${SERVICE}/data:/data
     depends_on:
       tailscale:
         condition: service_healthy
@@ -91,4 +90,4 @@ services:
       MEILI_NO_ANALYTICS: "true"
     volumes:
       # - ${PWD}/${SERVICE}-data/meilisearch:/meili_data
-      - ${HOME}/data/${SERVICE}/meilisearch:/meili_data
+      - ${HOME}/_app_data/${SERVICE}/meilisearch:/meili_data
