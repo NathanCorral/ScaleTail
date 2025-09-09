@@ -1,0 +1,84 @@
+services:
+  # Tailscale Sidecar Configuration
+  tailscale:
+    image: tailscale/tailscale:latest # Image to be used
+    container_name: tailscale-${SERVICE} # Name for local container management
+    hostname: ${SERVICE} # Name used within your Tailscale environment
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_EXTRA_ARGS=--reset --login-server=${CONTROL_SERVER_URL}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_ENABLE_HEALTH_CHECK=true              # Enable healthcheck endpoint: "/healthz"
+      - TS_LOCAL_ADDR_PORT=127.0.0.1:41234       # The <addr>:<port> for the healthz endpoint
+    volumes:
+      - ${HOME}/docker/headscale/${SERVICE}/ts_config:/config # Config folder used to store Tailscale files - you may need to change the path
+      - ${HOME}/docker/headscale/${SERVICE}/ts_state:/var/lib/tailscale # Tailscale requirement - you may need to change the path
+    devices:
+      - /dev/net/tun:/dev/net/tun # Network configuration for Tailscale to work
+    cap_add:
+      - net_admin # Tailscale requirement
+      - sys_module # Tailscale requirement
+    #ports:
+    #  - 0.0.0.0:${SERVICEPORT}:${SERVICEPORT} # Binding port ${SERVICE}PORT to the local network - may be removed if only exposure to your Tailnet is required
+    # If any DNS issues arise, use your preferred DNS provider by uncommenting the config below
+    dns: 
+      - ${DNS_SERVER}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:41234/healthz"] # Check Tailscale has a Tailnet IP and is operational
+      interval: 1m # How often to perform the check
+      timeout: 10s # Time to wait for the check to succeed
+      retries: 3 # Number of retries before marking as unhealthy
+      start_period: 10s # Time to wait before starting health checks
+    restart: always
+
+  # Joplin Database (PostgreSQL)
+  db:
+    image: postgres:16
+    container_name: db-${SERVICE}
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - ${HOME}/_app_data/${SERVICE}/database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  # Joplin 
+  app:
+    image: joplin/server:latest
+    container_name: app-${SERVICE}
+    network_mode: service:tailscale
+    depends_on:
+      db:
+        condition: service_healthy
+      tailscale:
+        condition: service_healthy
+    environment:
+      APP_BASE_URL:  https://${SERVICE}.app.corral.dev
+      APP_PORT: ${APP_PORT}
+      DB_CLIENT: pg
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DATABASE: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT} # 5432
+      MAILER_ENABLED: "false"
+      RATE_LIMITING_ENABLED: "false"
+      CORS_ORIGIN: https://${SERVICE}.app.corral.dev
+    volumes: # IDK if any data gets stored here....
+      - ${HOME}/_app_data/${SERVICE}/data:/home/joplin/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+
